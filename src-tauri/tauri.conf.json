@@ -4,7 +4,8 @@
   "version": "0.1.0",
   "identifier": "io.bidlist.pitchgauge",
   "build": {
-    "frontendDist": "../src"
+    "frontendDist": "../src",
+    "beforeBuildCommand": "npm run build:js"
   },
   "app": {
     "windows": [
