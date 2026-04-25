@@ -1,0 +1,374 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  /* Transparent areas don't receive DOM pointer events */
+  pointer-events: none;
+}
+
+#app {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* ── SVG Protractor ── */
+/* Fills the entire window so SVG viewBox coords = CSS logical coords at 1:1 */
+#protractor-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 50px); /* stop at the control bar */
+  display: block;
+  pointer-events: none;
+}
+
+/* Semicircle fill responds to pointer for drag-on-arc convenience */
+#arc-fill {
+  pointer-events: visibleFill;
+}
+
+#indicator-handle {
+  pointer-events: all;
+  cursor: grab;
+}
+
+#indicator-handle:active {
+  cursor: grabbing;
+}
+
+/* Readout is display-only */
+#readout-group {
+  pointer-events: none;
+}
+
+
+/* ── Control Bar ── */
+#control-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 12px;
+  background: rgba(24, 36, 52, 0.92);
+  backdrop-filter: blur(4px);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  pointer-events: auto;
+  cursor: grab;
+}
+
+#control-bar.dragging {
+  cursor: grabbing;
+}
+
+.ctrl-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: rgba(200, 215, 230, 0.85);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  flex-shrink: 0;
+}
+
+.ctrl-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.12);
+  color: #fff;
+}
+
+.ctrl-btn:active {
+  background: rgba(255,255,255,0.06);
+}
+
+.ctrl-btn-close:hover {
+  background: rgba(210, 60, 50, 0.7);
+  border-color: rgba(210, 60, 50, 0.5);
+  color: #fff;
+}
+
+.ctrl-btn.dragging {
+  background: rgba(255,255,255,0.14);
+  border-color: rgba(255,255,255,0.2);
+  color: #fff;
+  cursor: grabbing;
+}
+
+
+.ctrl-separator {
+  width: 1px;
+  height: 22px;
+  background: rgba(255,255,255,0.1);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+/* ── Opacity slider ── */
+.ctrl-opacity {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(200, 215, 230, 0.7);
+  cursor: default;
+}
+
+#opacity-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 72px;
+  height: 4px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+#opacity-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #c8d7e6;
+  border: 1.5px solid rgba(255,255,255,0.5);
+  cursor: pointer;
+}
+
+#opacity-slider::-webkit-slider-thumb:hover {
+  background: #fff;
+}
+
+/* ── Settings panel ── */
+#settings-panel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 50px;
+  background: rgba(14, 22, 34, 0.97);
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+  z-index: 100;
+  font-family: system-ui, sans-serif;
+  color: rgba(200, 215, 230, 0.9);
+}
+
+#settings-panel.hidden {
+  display: none;
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 13px;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+.settings-close-btn {
+  width: 28px;
+  height: 28px;
+}
+
+.settings-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+}
+
+.settings-section {
+  margin-bottom: 22px;
+}
+
+.settings-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.1px;
+  text-transform: uppercase;
+  color: rgba(200, 215, 230, 0.38);
+  margin-bottom: 8px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 8px;
+}
+
+.settings-row-label {
+  font-size: 13px;
+  color: rgba(200, 215, 230, 0.88);
+}
+
+.settings-row-sub {
+  font-size: 11px;
+  color: rgba(200, 215, 230, 0.38);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.settings-note {
+  font-size: 12px;
+  color: rgba(200, 215, 230, 0.45);
+  padding: 10px 12px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 7px;
+  line-height: 1.6;
+}
+
+.settings-note strong {
+  color: rgba(200, 215, 230, 0.7);
+  font-weight: 600;
+}
+
+/* Toggle switch */
+.toggle-switch {
+  position: relative;
+  width: 38px;
+  height: 22px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.14);
+  border-radius: 11px;
+  transition: background 0.18s;
+}
+
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  left: 3px;
+  top: 3px;
+  background: rgba(200, 215, 230, 0.9);
+  border-radius: 50%;
+  transition: transform 0.18s;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background: #3a6fa0;
+}
+
+.toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(16px);
+}
+
+/* ── Update notification ── */
+#update-dialog {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  z-index: 95;
+  pointer-events: auto;
+}
+
+#update-dialog.hidden {
+  display: none;
+}
+
+.update-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(14, 22, 34, 0.97);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  font-family: system-ui, sans-serif;
+  backdrop-filter: blur(4px);
+}
+
+.update-info {
+  flex: 1;
+}
+
+.update-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(200, 215, 230, 0.95);
+}
+
+.update-subtitle {
+  font-size: 11px;
+  color: rgba(200, 215, 230, 0.5);
+  margin-top: 2px;
+}
+
+.update-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.update-btn {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-family: system-ui, sans-serif;
+  transition: background 0.12s;
+}
+
+.update-btn-primary {
+  background: #3a6fa0;
+  color: #fff;
+}
+
+.update-btn-primary:hover {
+  background: #4a80b4;
+}
+
+.update-btn-secondary {
+  background: rgba(255,255,255,0.1);
+  color: rgba(200, 215, 230, 0.8);
+}
+
+.update-btn-secondary:hover {
+  background: rgba(255,255,255,0.16);
+}

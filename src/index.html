@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pitch Gauge</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- SVG protractor fills the upper portion of the window -->
+    <svg id="protractor-svg"
+         viewBox="0 0 560 390"
+         preserveAspectRatio="xMidYMid meet"
+         xmlns="http://www.w3.org/2000/svg">
+
+      <!-- Rotation group: everything rotates around vertex (280,390) -->
+      <g id="protractor-group" transform="rotate(0,280,390)">
+
+        <!-- Semicircle fill (opacity controlled by slider) -->
+        <path id="arc-fill"
+              d="M 10,390 A 270,270 0 0,1 550,390 Z"
+              fill="#3a6fa0"
+              fill-opacity="0.18"
+              stroke="none" />
+
+        <!-- Semicircle arc outline -->
+        <path id="arc-outline"
+              d="M 10,390 A 270,270 0 0,1 550,390"
+              fill="none"
+              stroke="#1a2e45"
+              stroke-width="1.8"
+              stroke-linecap="round" />
+
+        <!-- Diameter baseline -->
+        <line id="baseline"
+              x1="10" y1="390" x2="550" y2="390"
+              stroke="#1a2e45" stroke-width="1.8" stroke-linecap="round" />
+
+        <!-- Vertex crosshair: dark outline + white inner for contrast on any bg -->
+        <g id="vertex-crosshair" stroke-linecap="round">
+          <line x1="253" y1="390" x2="271" y2="390" stroke="#1a2e45" stroke-width="3.5"/>
+          <line x1="289" y1="390" x2="307" y2="390" stroke="#1a2e45" stroke-width="3.5"/>
+          <line x1="280" y1="364" x2="280" y2="382" stroke="#1a2e45" stroke-width="3.5"/>
+          <line x1="253" y1="390" x2="271" y2="390" stroke="white"   stroke-width="1.5"/>
+          <line x1="289" y1="390" x2="307" y2="390" stroke="white"   stroke-width="1.5"/>
+          <line x1="280" y1="364" x2="280" y2="382" stroke="white"   stroke-width="1.5"/>
+          <circle cx="280" cy="390" r="2.5" fill="white" stroke="#1a2e45" stroke-width="1"/>
+        </g>
+
+        <!-- Indicator line: vertex (280,390) → point on arc -->
+        <line id="indicator-line"
+              x1="280" y1="390" x2="280" y2="120"
+              stroke="#D85A30"
+              stroke-width="2"
+              stroke-linecap="round" />
+
+        <!-- Drag handle at arc endpoint of indicator -->
+        <circle id="indicator-handle"
+                cx="280" cy="120" r="9"
+                fill="#D85A30"
+                stroke="#fff"
+                stroke-width="1.5"
+                style="cursor:grab" />
+
+        <!-- Readout box -->
+        <g id="readout-group">
+          <rect id="readout-bg"
+                x="210" y="238" width="120" height="58"
+                rx="5" ry="5"
+                fill="rgba(255,255,255,0.92)"
+                stroke="#c0c8d4"
+                stroke-width="1" />
+          <text id="readout-label"
+                x="270" y="258"
+                text-anchor="middle"
+                font-family="system-ui, sans-serif"
+                font-size="11"
+                fill="#6b7a8d"
+                letter-spacing="0.5">Roof pitch</text>
+          <text id="readout-value"
+                x="270" y="287"
+                text-anchor="middle"
+                font-family="system-ui, sans-serif"
+                font-size="28"
+                font-weight="600"
+                fill="#1a2e45">6.0/12</text>
+        </g>
+
+      </g><!-- /protractor-group -->
+
+    </svg>
+
+    <!-- Control bar sits below the protractor arc baseline -->
+    <div id="control-bar">
+
+      <button class="ctrl-btn" id="btn-move" title="Drag to move window">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+          <line x1="10" y1="2" x2="10" y2="18"/>
+          <line x1="2" y1="10" x2="18" y2="10"/>
+          <polyline points="7,5 10,2 13,5"/>
+          <polyline points="15,7 18,10 15,13"/>
+          <polyline points="13,15 10,18 7,15"/>
+          <polyline points="5,13 2,10 5,7"/>
+        </svg>
+      </button>
+
+      <button class="ctrl-btn" id="btn-resize" title="Drag to resize">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+          <line x1="3" y1="17" x2="17" y2="3"/>
+          <polyline points="10,3 17,3 17,10"/>
+          <polyline points="3,10 3,17 10,17"/>
+        </svg>
+      </button>
+
+      <button class="ctrl-btn" id="btn-rotate" title="Drag to rotate baseline">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M 4,10 A 6,6 0 1,1 10,16"/>
+          <polyline points="10,19 10,16 13,16"/>
+        </svg>
+      </button>
+
+      <div class="ctrl-separator"></div>
+
+      <label class="ctrl-opacity" title="Protractor fill opacity">
+        <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor" opacity="0.5">
+          <circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M8 2 A6 6 0 0 1 8 14 Z"/>
+        </svg>
+        <input type="range" id="opacity-slider" min="10" max="80" value="30" step="1" />
+      </label>
+
+      <div class="ctrl-separator"></div>
+
+      <button class="ctrl-btn" id="btn-settings" title="Settings (coming soon)">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="10" cy="10" r="2.5"/>
+          <path d="M10 2 v2 M10 16 v2 M2 10 h2 M16 10 h2
+                   M4.22 4.22 l1.42 1.42 M14.36 14.36 l1.42 1.42
+                   M14.36 5.64 l-1.42 1.42 M5.64 14.36 l-1.42 1.42"/>
+        </svg>
+      </button>
+
+      <button class="ctrl-btn ctrl-btn-close" id="btn-close" title="Close">
+        <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="4" y1="4" x2="16" y2="16"/>
+          <line x1="16" y1="4" x2="4" y2="16"/>
+        </svg>
+      </button>
+
+    </div><!-- /control-bar -->
+    <!-- Update notification (hidden until an update is found) -->
+    <div id="update-dialog" class="hidden">
+      <div class="update-card">
+        <div class="update-info">
+          <div class="update-title">Update available</div>
+          <div id="update-version-text" class="update-subtitle"></div>
+        </div>
+        <div class="update-actions">
+          <button id="btn-update-install" class="update-btn update-btn-primary">Install</button>
+          <button id="btn-update-later" class="update-btn update-btn-secondary">Later</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings panel (overlays SVG, hidden by default) -->
+    <div id="settings-panel" class="hidden">
+      <div class="settings-header">
+        <span>Settings</span>
+        <button class="ctrl-btn settings-close-btn" id="btn-settings-close" title="Close settings">
+          <svg viewBox="0 0 20 20" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+            <line x1="4" y1="4" x2="16" y2="16"/>
+            <line x1="16" y1="4" x2="4" y2="16"/>
+          </svg>
+        </button>
+      </div>
+      <div class="settings-body">
+
+        <div class="settings-section">
+          <div class="settings-section-title">Startup</div>
+          <div class="settings-row">
+            <div>
+              <div class="settings-row-label">Launch on startup</div>
+              <div class="settings-row-sub">Starts hidden — press Backtick ` to show</div>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-autostart" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-section-title">Shortcuts</div>
+          <div class="settings-note">
+            <strong>Backtick `</strong> — show / hide overlay
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /settings-panel -->
+
+  </div><!-- /app -->
+
+  <script type="module" src="bundle.js"></script>
+</body>
+</html>
