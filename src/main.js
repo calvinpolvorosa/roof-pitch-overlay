@@ -4,7 +4,7 @@ import {
   CX, CY, R, DEFAULT_ANGLE, pitchToAngle,
 } from './protractor.js';
 
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import { getCurrentWindow, availableMonitors } from '@tauri-apps/api/window';
 import { LogicalPosition, LogicalSize, PhysicalPosition } from '@tauri-apps/api/dpi';
 import { listen } from '@tauri-apps/api/event';
 import { invoke } from '@tauri-apps/api/core';
@@ -29,6 +29,23 @@ const state = {
 let store;
 const win = getCurrentWindow();
 
+// ── Screen bounds check ───────────────────────────────────────────────────────
+
+async function isPositionOnScreen(lx, ly) {
+  try {
+    const monitors = await availableMonitors();
+    return monitors.some(m => {
+      const mx = m.position.x / m.scaleFactor;
+      const my = m.position.y / m.scaleFactor;
+      const mw = m.size.width  / m.scaleFactor;
+      const mh = m.size.height / m.scaleFactor;
+      return lx >= mx && ly >= my && lx < mx + mw && ly < my + mh;
+    });
+  } catch {
+    return true; // fail open: don't block restore if API errors
+  }
+}
+
 // ── Init ──────────────────────────────────────────────────────────────────────
 
 async function init() {
@@ -46,7 +63,7 @@ async function init() {
   if (savedRotation != null) state.rotation       = savedRotation;
   if (savedOpacity  != null) state.opacity        = savedOpacity;
 
-  if (savedX != null && savedY != null)
+  if (savedX != null && savedY != null && await isPositionOnScreen(savedX, savedY))
     await win.setPosition(new LogicalPosition(savedX, savedY));
   if (savedW != null && savedH != null)
     await win.setSize(new LogicalSize(savedW, savedH));
